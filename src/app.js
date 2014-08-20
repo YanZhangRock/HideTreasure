@@ -74,6 +74,7 @@ var MainScene = cc.Scene.extend({
     onLoadMapFinish: function() {
         this.mapLayer.initMap();
         this.mapLayer.drawMap();
+        this.mapLayer.createObjs();
     },
 
     onEnter:function () {

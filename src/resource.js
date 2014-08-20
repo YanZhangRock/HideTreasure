@@ -3,7 +3,9 @@ var res = {
     CloseNormal_png : "res/CloseNormal.png",
     CloseSelected_png : "res/CloseSelected.png",
     Tile_png : "res/Tilemap.png",
-    Tile_plist : "res/Tilemap.plist"
+    Tile_plist : "res/Tilemap.plist",
+    Thief_png : "res/thief.png",
+    Guard_png : "res/guard.png"
 };
 
 var g_resources = [];

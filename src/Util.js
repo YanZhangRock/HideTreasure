@@ -10,6 +10,12 @@ Util.grid2World = function( grid ) {
     return { x: x, y: y };
 };
 
+Util.world2Grid = function( world ) {
+    var x = ( world.x - Def.ORI_GRID.x ) / Def.GRID_SIZE - 1;
+    var y = ( world.y - Def.ORI_GRID.y ) / Def.GRID_SIZE - 1;
+    return { x: x, y: y };
+};
+
 Util.loadJsonFile = function( fileName, callBack ) {
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
@@ -22,3 +28,7 @@ Util.loadJsonFile = function( fileName, callBack ) {
     }
     xobj.send(null);
 };
+
+Util.getManDist = function ( from, to ) {
+    return Math.abs( from.x - to.x ) + Math.abs( from.y - to.y );
+}
