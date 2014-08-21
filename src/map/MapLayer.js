@@ -6,7 +6,7 @@ var MapLayer = cc.Layer.extend({
     data: null,
     grids: {},
     thief: null,
-    guard: null,
+    guards: [],
     mapName: "res/mapCfg/map2.json",
 
     ctor: function() {
@@ -75,11 +75,21 @@ var MapLayer = cc.Layer.extend({
     },
 
     createObjs: function() {
+        // thief
         this.thief = new Thief( res.Thief_png, this );
         var grid = this.grids[this.data.thiefPos.x][this.data.thiefPos.y];
         this.thief.setCurGrid( grid );
         this.addChild( this.thief, MapLayer.Z.THIEF );
-        this.thief.startMove();
+        // guard
+        for( var i in this.data.guardPos ) {
+            var cfg = this.data.guardPos[i];
+            var guard = new Guard( res.Guard_png, this );
+            var grid = this.grids[cfg.x][cfg.y];
+            guard.setCurGrid( grid );
+            this.guards.push( guard );
+            guard.startPatrol();
+            this.addChild( guard, MapLayer.Z.GUARD );
+        }
     },
 
     getOffsetGrid: function( grid, offset ) {
@@ -116,6 +126,8 @@ var MapLayer = cc.Layer.extend({
     onKeyPressed: function( key, event ) {
         if( key == cc.KEY.w || key == cc.KEY.up ) {
             this.thief.changeDir( Def.UP );
+            this.guards[0].changeDir( Def.UP );
+            this.guards[1].changeDir( Def.UP );
         } else if( key == cc.KEY.a || key == cc.KEY.left ) {
             this.thief.changeDir( Def.LEFT );
         } else if( key == cc.KEY.d || key == cc.KEY.right ) {
