@@ -78,7 +78,6 @@ var MapLayer = cc.Layer.extend({
         this.thief = new Thief( res.Thief_png, this );
         var grid = this.grids[this.data.thiefPos.x][this.data.thiefPos.y];
         this.thief.setCurGrid( grid );
-        this.thief.updateNextGrid();
         this.addChild( this.thief, MapLayer.Z.THIEF );
         this.thief.startMove();
     },
@@ -89,32 +88,40 @@ var MapLayer = cc.Layer.extend({
         var y = grid.y;
         x = x + offset.x;
         y = y + offset.y;
-        if( x > this.data.width ) {
+        if( x > this.data.width-1 ) {
             //isCrossBorder = true;
             x = x - this.data.width;
-        } else if( x < 1 ) {
+        } else if( x < 0 ) {
             //isCrossBorder = true
             x = x + this.data.width;
         }
-        if( y > this.data.height ) {
+        if( y > this.data.height-1 ) {
             //isCrossBorder = true
             y = y - this.data.height;
-        } else if ( y < 1 ) {
+        } else if ( y < 0 ) {
             //isCrossBorder = true
             y = y + this.data.height;
         }
         return this.grids[x][y]
     },
 
+    canPass: function( grid ) {
+        if( MapLayer.TILE2TYPE[grid.tile] == MapLayer.TILE_TYPE.BLOCK ) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+
     onKeyPressed: function( key, event ) {
         if( key == cc.KEY.w || key == cc.KEY.up ) {
-            this.thief.storeNextDir( Def.UP );
+            this.thief.changeDir( Def.UP );
         } else if( key == cc.KEY.a || key == cc.KEY.left ) {
-            this.thief.storeNextDir( Def.LEFT );
+            this.thief.changeDir( Def.LEFT );
         } else if( key == cc.KEY.d || key == cc.KEY.right ) {
-            this.thief.storeNextDir( Def.RIGHT );
+            this.thief.changeDir( Def.RIGHT );
         } else if( key == cc.KEY.s || key == cc.KEY.down ) {
-            this.thief.storeNextDir( Def.DOWN );
+            this.thief.changeDir( Def.DOWN );
         }
     },
     onKeyReleased: function( key, event ) {}
@@ -124,4 +131,13 @@ MapLayer.Z = {
     TILE: 0,
     THIEF: 1,
     GUARD: 2
+};
+
+MapLayer.TILE_TYPE = {
+    BLOCK: 1, ROAD: 2
+};
+
+MapLayer.TILE2TYPE = {
+    TREES: MapLayer.TILE_TYPE.BLOCK,
+    GRASS: MapLayer.TILE_TYPE.ROAD
 };
