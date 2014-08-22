@@ -3,10 +3,12 @@
  */
 
 var Money = Item.extend({
-    layer: null,
-    grid: null,
+    ctor: function( layer ) {
+        this._super( res.Money_png, layer );
+    },
 
-    ctor: function( img, layer ) {
-        this._super( img, layer );
+    onSteal: function( thief ) {
+        this.layer.grids[this.grid.x][this.grid.y].money = null;
+        this.layer.removeChild( this );
     }
 })

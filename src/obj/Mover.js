@@ -13,6 +13,7 @@ var Mover = cc.Sprite.extend({
     xSpeed: 0,
     ySpeed: 0,
     state: null,
+    lastState: null,
     speed: 0,
     arriveCallBack: null,
     updateCallBack: null,
@@ -43,6 +44,15 @@ var Mover = cc.Sprite.extend({
 
     stopMove: function() {
         this.state = Mover.STATE.IDLE;
+    },
+
+    pauseMove: function() {
+        this.lastState = this.state;
+        this.state = Mover.STATE.PAUSE;
+    },
+
+    continueMove: function() {
+        this.state = this.lastState;
     },
 
     update: function( dt ) {
@@ -123,6 +133,7 @@ var Mover = cc.Sprite.extend({
     },
 
     changeDir: function( dir ) {
+        if( this.state == Mover.STATE.PAUSE ) return;
         if( this.canChangeDirNow( dir ) ) {
             this.curDir = dir;
             this.storeNextDir( dir );
@@ -251,5 +262,6 @@ var Mover = cc.Sprite.extend({
 Mover.ARRIVE_DIST = 0.5;
 Mover.STATE = {
     IDLE: 0,
-    MOVE: 1
+    MOVE: 1,
+    PAUSE: 2
 };

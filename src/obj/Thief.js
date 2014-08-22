@@ -24,13 +24,23 @@ var Thief = Mover.extend({
         for( var i in this.guards ) {
             this.guards[i].onThiefArriveGrid();
         }
+        if( this.curGrid.trap ) {
+            this.curGrid.trap.onCatch( this );
+        }
     },
 
     processCollide: function() {
         for( var i in this.moneys ) {
             var money = this.moneys[i];
             if( this.isCollide( money ) ) {
+                money.onSteal( this );
                 this.onGetMoney( money );
+            }
+        }
+        for( var i in this.guards ) {
+            var guard = this.guards[i];
+            if( this.isCollide( guard ) ) {
+                this.layer.endGame( false );
             }
         }
     },
@@ -48,10 +58,12 @@ var Thief = Mover.extend({
 
     onGetMoney: function( money ) {
         this.moneyNum++;
-        this.grids[money.grid.x][money.grid.y].money = null;
         Util.arrayRemove( this.moneys, money );
-        this.layer.removeChild( money );
+        if( this.moneyNum >= Thief.MONEY_MAX ) {
+            this.layer.endGame( true );
+        }
     }
 });
 
 Thief.SPEED = 80;
+Thief.MONEY_MAX = 3;
