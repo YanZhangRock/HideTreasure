@@ -6,8 +6,7 @@ var Trap = Item.extend({
     thief: null,
 
     ctor: function( layer ) {
-        this._super( res.Trap1_png, layer );
-        this.setScale( 0.6 );
+        this._super( res.Trap_png, layer );
     },
 
     onCatch: function( thief ) {
@@ -18,7 +17,8 @@ var Trap = Item.extend({
     },
 
     onPauseEnd: function() {
-        this.setTexture( res.Trap1_png );
+        this.setTexture( res.Trap_png );
+        this.unschedule( this.onPauseEnd );
         this.thief.continueMove();
     }
 })

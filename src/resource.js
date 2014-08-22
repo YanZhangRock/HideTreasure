@@ -7,7 +7,7 @@ var res = {
     Thief_png : "res/thief.png",
     Guard_png : "res/guard.png",
     Money_png : "res/money.png",
-    Trap1_png : "res/trap1.png",
+    Trap_png : "res/trap.png",
     Trap2_png : "res/trap2.png"
 };
 

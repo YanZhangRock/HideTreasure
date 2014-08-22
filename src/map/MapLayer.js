@@ -229,6 +229,7 @@ var MapLayer = cc.Layer.extend({
         this.thief.moneys = this.moneys;
         this.thief.guards = this.guards;
         this.thief.traps = this.traps;
+        //this.thief.runAction( cc.moveBy( 5, cc.p(500,0)) );
     },
 
     getOffsetGrid: function( grid, offset ) {

@@ -26,7 +26,7 @@ var Mover = cc.Sprite.extend({
             anchorY: 0.5,
             x: 0,
             y: 0,
-            scale: 1.2
+            scale: 1.0
         });
         this.grids = layer.grids;
         this.layer = layer;
@@ -52,7 +52,9 @@ var Mover = cc.Sprite.extend({
     },
 
     continueMove: function() {
-        this.state = this.lastState;
+        //this.state = this.lastState;
+        this.state = Mover.STATE.IDLE;
+        this.changeDir( this.nextDir );
     },
 
     update: function( dt ) {
@@ -133,7 +135,10 @@ var Mover = cc.Sprite.extend({
     },
 
     changeDir: function( dir ) {
-        if( this.state == Mover.STATE.PAUSE ) return;
+        if( this.state == Mover.STATE.PAUSE ) {
+            this.storeNextDir( dir );
+            return;
+        }
         if( this.canChangeDirNow( dir ) ) {
             this.curDir = dir;
             this.storeNextDir( dir );
