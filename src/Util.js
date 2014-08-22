@@ -31,4 +31,16 @@ Util.loadJsonFile = function( fileName, callBack ) {
 
 Util.getManDist = function ( from, to ) {
     return Math.abs( from.x - to.x ) + Math.abs( from.y - to.y );
-}
+};
+
+Util.arrayRemove = function( array, obj ) {
+    var idx = -1;
+    for( var i in array ) {
+        if( array[i] == obj ) {
+            idx = i;
+            break;
+        }
+    }
+    if( idx < 0 ) return;
+    array.splice( idx, 1 );
+};

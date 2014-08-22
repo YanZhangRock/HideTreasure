@@ -5,6 +5,11 @@
 	"guardPos": [
 		{"x": 2, "y": 1}
 	],
+    "moneyPos": [
+        {"x": 1, "y": 1},
+        {"x": 7, "y": 3},
+        {"x": 9, "y": 11}
+    ],
 	"gridsData": [
 		{ "x": 0, "y": 0, "tile": "TREES"},
 		{ "x": 1, "y": 0, "tile": "TREES"},
@@ -18,7 +23,7 @@
 		{ "x": 9, "y": 0, "tile": "TREES"},
 		{ "x": 10, "y": 0, "tile": "TREES"},
 		{ "x": 0, "y": 1, "tile": "TREES"},
-		{ "x": 1, "y": 1, "tile": "GRASS", "trap": true},
+		{ "x": 1, "y": 1, "tile": "GRASS"},
 		{ "x": 2, "y": 1, "tile": "GRASS"},
 		{ "x": 3, "y": 1, "tile": "GRASS"},
 		{ "x": 4, "y": 1, "tile": "GRASS"},
@@ -26,7 +31,7 @@
 		{ "x": 6, "y": 1, "tile": "GRASS"},
 		{ "x": 7, "y": 1, "tile": "GRASS"},
 		{ "x": 8, "y": 1, "tile": "TREES"},
-		{ "x": 9, "y": 1, "tile": "GRASS", "trap": true},
+		{ "x": 9, "y": 1, "tile": "GRASS"},
 		{ "x": 10, "y": 1, "tile": "TREES"},
 		{ "x": 0, "y": 2, "tile": "TREES"},
 		{ "x": 1, "y": 2, "tile": "GRASS"},
@@ -46,7 +51,7 @@
 		{ "x": 4, "y": 3, "tile": "TREES"},
 		{ "x": 5, "y": 3, "tile": "GRASS"},
 		{ "x": 6, "y": 3, "tile": "TREES"},
-		{ "x": 7, "y": 3, "tile": "GRASS", "trap": true},
+		{ "x": 7, "y": 3, "tile": "GRASS"},
 		{ "x": 8, "y": 3, "tile": "GRASS"},
 		{ "x": 9, "y": 3, "tile": "GRASS"},
 		{ "x": 10, "y": 3, "tile": "TREES"},
@@ -128,7 +133,7 @@
 		{ "x": 9, "y": 10, "tile": "GRASS"},
 		{ "x": 10, "y": 10, "tile": "TREES"},
 		{ "x": 0, "y": 11, "tile": "TREES"},
-		{ "x": 1, "y": 11, "tile": "GRASS", "trap": true},
+		{ "x": 1, "y": 11, "tile": "GRASS"},
 		{ "x": 2, "y": 11, "tile": "GRASS"},
 		{ "x": 3, "y": 11, "tile": "GRASS"},
 		{ "x": 4, "y": 11, "tile": "TREES"},
@@ -136,7 +141,7 @@
 		{ "x": 6, "y": 11, "tile": "TREES"},
 		{ "x": 7, "y": 11, "tile": "GRASS"},
 		{ "x": 8, "y": 11, "tile": "GRASS"},
-		{ "x": 9, "y": 11, "tile": "GRASS", "trap": true},
+		{ "x": 9, "y": 11, "tile": "GRASS"},
 		{ "x": 10, "y": 11, "tile": "TREES"},
 		{ "x": 0, "y": 12, "tile": "TREES"},
 		{ "x": 1, "y": 12, "tile": "TREES"},

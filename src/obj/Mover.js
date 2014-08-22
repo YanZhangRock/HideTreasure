@@ -25,7 +25,7 @@ var Mover = cc.Sprite.extend({
             anchorY: 0.5,
             x: 0,
             y: 0,
-            scale: 1.0
+            scale: 1.2
         });
         this.grids = layer.grids;
         this.layer = layer;
@@ -50,6 +50,10 @@ var Mover = cc.Sprite.extend({
             this.updateCallBack( dt );
         }
         this.processMove( dt );
+    },
+
+    collideRect: function( x, y ) {
+        return cc.rect(x - 10, y - 10, 20, 20);
     },
 
     processMove: function( dt ) {

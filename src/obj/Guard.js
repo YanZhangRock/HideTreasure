@@ -11,10 +11,10 @@ var Guard = Mover.extend({
         this.speed = Guard.PATROL_SPEED;
         this.aiState = Guard.AI_STATE.PATROL;
         this.arriveCallBack = this.onArriveGrid;
-        this.updateCallBack = this.updateCallBack;
+        this.updateCallBack = this.onUpdate;
     },
 
-    updateCallBack: function( dt ) {
+    onUpdate: function( dt ) {
         switch ( this.aiState ) {
             case Guard.AI_STATE.PATROL:
                 this.processPatrol();

@@ -5,7 +5,9 @@ var res = {
     Tile_png : "res/Tilemap.png",
     Tile_plist : "res/Tilemap.plist",
     Thief_png : "res/thief.png",
-    Guard_png : "res/guard.png"
+    Guard_png : "res/guard.png",
+    Money_png : "res/money.png",
+    Trap_png : "res/trap.png"
 };
 
 var g_resources = [];

@@ -7,6 +7,8 @@ var MapLayer = cc.Layer.extend({
     grids: {},
     thief: null,
     guards: [],
+    moneys: [],
+    traps: [],
     mapName: "res/mapCfg/map2.json",
 
     ctor: function() {
@@ -82,7 +84,7 @@ var MapLayer = cc.Layer.extend({
         var grid = this.grids[this.data.thiefPos.x][this.data.thiefPos.y];
         this.thief.setCurGrid( grid );
         this.addChild( this.thief, MapLayer.Z.THIEF );
-        // guard
+        // guards
         for( var i in this.data.guardPos ) {
             var cfg = this.data.guardPos[i];
             var guard = new Guard( res.Guard_png, this );
@@ -90,10 +92,22 @@ var MapLayer = cc.Layer.extend({
             guard.setCurGrid( grid );
             this.guards.push( guard );
             guard.thief = this.thief;
-            this.thief.guards.push( guard );
+            //this.thief.guards.push( guard );
             guard.startPatrol();
             this.addChild( guard, MapLayer.Z.GUARD );
         }
+        // money
+        for( var i in this.data.moneyPos ) {
+            var cfg = this.data.moneyPos[i];
+            var grid = this.grids[cfg.x][cfg.y];
+            var money = new Money( res.Money_png, this );
+            grid.money = money;
+            money.setGrid( grid );
+            this.moneys.push( money );
+            this.addChild( money, MapLayer.Z.ITEM );
+        }
+        this.thief.moneys = this.moneys;
+        this.thief.guards = this.guards;
     },
 
     getOffsetGrid: function( grid, offset ) {
@@ -213,8 +227,9 @@ var MapLayer = cc.Layer.extend({
 
 MapLayer.Z = {
     TILE: 0,
-    THIEF: 1,
-    GUARD: 2
+    ITEM: 1,
+    THIEF: 2,
+    GUARD: 3
 };
 
 MapLayer.TILE_TYPE = {
