@@ -13,16 +13,12 @@ var MapLayer = cc.Layer.extend({
     restartMenu: null,
     resultLabel: null,
     mapName: "res/mapCfg/map2.json",
+    touchBaganLoc: null,
 
     ctor: function() {
         this._super();
         cc.spriteFrameCache.addSpriteFrames(res.Tile_plist);
-        var self = this;
-        cc.eventManager.addListener({
-            event: cc.EventListener.KEYBOARD,
-            onKeyPressed: function(key,event){self.onKeyPressed(key,event);},
-            onKeyReleased: function (key,event){self.onKeyReleased(key,event);}
-        }, this);
+        this.registerInputs();
         this.state = MapLayer.STATE.GAME;
         // restart label
         var label = new cc.LabelTTF("重新开始", "Arial", 80);
@@ -36,6 +32,50 @@ var MapLayer = cc.Layer.extend({
         this.resultLabel = label;
         this.addChild( label, MapLayer.Z.UI );
         this.showResult( false );
+    },
+
+    registerInputs: function() {
+        var self = this;
+        // keyboard
+        cc.eventManager.addListener({
+            event: cc.EventListener.KEYBOARD,
+            onKeyPressed: function(key,event){self.onKeyPressed(key,event);},
+            //onKeyReleased: function (key,event){self.onKeyReleased(key,event);}
+        }, this);
+        // touch
+        cc.eventManager.addListener({
+            prevTouchId: -1,
+            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
+            onTouchesBegan:function (touches, event) {
+                var touch = touches[0];
+                self.touchBeganLoc = touch.getLocation();
+            },
+            onTouchesEnded:function (touches, event) {
+                var touch = touches[0];
+                var l1 = self.touchBeganLoc;
+                var l2 = touch.getLocation();
+                var dx = l2.x - l1.x;
+                var dy = l2.y - l1.y;
+                if( Math.abs(dy) < MapLayer.SWIPE_DIST &&
+                    Math.abs(dx) < MapLayer.SWIPE_DIST ) return;
+                var dir = Def.UP;
+                if( Math.abs(dy) > Math.abs(dx) ) {
+                    if( dy > 0 ) {
+                        dir = Def.UP;
+                    } else {
+                        dir = Def.DOWN;
+                    }
+                } else {
+                    if( dx > 0 ) {
+                        dir = Def.RIGHT;
+                    } else {
+                        dir = Def.LEFT;
+                    }
+                }
+                //event.getCurrentTarget().onSwipe( dir );
+                self.onSwipe( dir );
+            }
+        }, this);
     },
 
     showResult: function( isShow ) {
@@ -304,7 +344,11 @@ var MapLayer = cc.Layer.extend({
             this.thief.changeDir( Def.DOWN );
         }
     },
-    onKeyReleased: function( key, event ) {}
+
+    onSwipe: function( dir ) {
+        if( this.state == MapLayer.STATE.END ) return;
+        this.thief.changeDir( dir );
+    }
 });
 
 MapLayer.Z = {
@@ -327,3 +371,5 @@ MapLayer.TILE2TYPE = {
 MapLayer.STATE = {
     GAME: 0, END: 1
 };
+
+MapLayer.SWIPE_DIST = 20;
