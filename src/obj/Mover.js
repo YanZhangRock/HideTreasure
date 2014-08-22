@@ -26,7 +26,7 @@ var Mover = cc.Sprite.extend({
             anchorY: 0.5,
             x: 0,
             y: 0,
-            scale: 1.0
+            scale: 1.25
         });
         this.grids = layer.grids;
         this.layer = layer;

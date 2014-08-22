@@ -13,7 +13,7 @@ var Item = cc.Sprite.extend({
             anchorY: 0.5,
             x: 0,
             y: 0,
-            scale: 0.8
+            scale: 1.0
         });
         this.layer = layer;
     },

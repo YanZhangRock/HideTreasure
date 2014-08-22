@@ -8,7 +8,8 @@ var res = {
     Guard_png : "res/guard.png",
     Money_png : "res/money.png",
     Trap_png : "res/trap.png",
-    Trap2_png : "res/trap2.png"
+    Trap2_png : "res/trap2.png",
+    Gold_png : "res/gold.png"
 };
 
 var g_resources = [];

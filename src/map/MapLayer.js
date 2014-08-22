@@ -12,14 +12,23 @@ var MapLayer = cc.Layer.extend({
     state: null,
     restartMenu: null,
     resultLabel: null,
+    scoreLabel: null,
     mapName: "res/mapCfg/map2.json",
     touchBaganLoc: null,
+    mapBatch: null,
+    goldBatch: null,
 
     ctor: function() {
         this._super();
         cc.spriteFrameCache.addSpriteFrames(res.Tile_plist);
         this.registerInputs();
         this.state = MapLayer.STATE.GAME;
+        // score label
+        var label = new cc.LabelTTF("得分: ", "Arial", 40);
+        this.scoreLabel = label;
+        label.x = g_size.width * 0.2;
+        label.y = g_size.height * 0.94;
+        this.addChild( label, MapLayer.Z.UI );
         // restart label
         var label = new cc.LabelTTF("重新开始", "Arial", 80);
         var self = this;
@@ -113,6 +122,7 @@ var MapLayer = cc.Layer.extend({
         this.clearObjs();
         this.initMap();
         this.createObjs();
+        this.createGolds();
         this.showResult( false );
         this.state = MapLayer.STATE.GAME;
     },
@@ -169,11 +179,15 @@ var MapLayer = cc.Layer.extend({
     },
 
     drawMap: function() {
+        var mapImg = cc.textureCache.addImage(res.Tile_png);
+        var batchNode = new cc.SpriteBatchNode(mapImg);
+        this.mapBatch = batchNode;
+        this.addChild( batchNode, MapLayer.Z.TILE );
+
         for( var i=0; i<this.data.width; i++ ) {
             for( var j=0; j<this.data.height; j++) {
                 var grid = this.grids[i][j];
-                var sprite = new cc.Sprite();
-                sprite.initWithSpriteFrameName( this.getTileImg( grid.tile ) );
+                var sprite = new cc.Sprite( "#"+this.getTileImg( grid.tile ) );
                 grid.sprite = sprite;
                 var pos = Util.grid2World( grid );
                 sprite.attr({
@@ -183,7 +197,33 @@ var MapLayer = cc.Layer.extend({
                     y: pos.y,
                     scale: Def.GRID_SCALE
                 });
-                this.addChild( sprite, MapLayer.Z.TILE );
+                batchNode.addChild( sprite );
+            }
+        }
+    },
+
+    createGolds: function() {
+        if( this.goldBatch ) {
+            this.goldBatch.removeAllChildren();
+            this.removeChild( this.goldBatch );
+            this.goldBatch = null;
+        }
+        var batch = new cc.SpriteBatchNode( res.Gold_png, 100 );
+        this.goldBatch = batch;
+        this.addChild( batch, MapLayer.Z.ITEM );
+        for( var i=0; i<this.data.width; i++ ) {
+            for( var j=0; j<this.data.height; j++) {
+                var grid = this.grids[i][j];
+                var pos = Util.grid2World( grid );
+                if( grid.tile == "GRASS" && !grid.money &&
+                    !grid.guard && !grid.thief ) {
+                    var gold = new Gold( this );
+                    gold.initWithTexture( batch.getTexture() );
+                    gold.setPosition(pos);
+                    gold.grid = grid;
+                    grid.gold = gold;
+                    batch.addChild( gold );
+                }
             }
         }
     },
@@ -193,6 +233,7 @@ var MapLayer = cc.Layer.extend({
         this.thief = new Thief( res.Thief_png, this );
         var grid = this.grids[this.data.thiefPos.x][this.data.thiefPos.y];
         this.thief.setCurGrid( grid );
+        grid.thief = this.thief;
         this.addChild( this.thief, MapLayer.Z.THIEF );
         // guards
         for( var i in this.data.guardPos ) {
@@ -202,6 +243,7 @@ var MapLayer = cc.Layer.extend({
             guard.setCurGrid( grid );
             this.guards.push( guard );
             guard.thief = this.thief;
+            grid.guard = guard;
             //this.thief.guards.push( guard );
             guard.startPatrol();
             this.addChild( guard, MapLayer.Z.GUARD );

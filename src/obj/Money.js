@@ -9,6 +9,7 @@ var Money = Item.extend({
 
     onSteal: function( thief ) {
         this.layer.grids[this.grid.x][this.grid.y].money = null;
+        thief.addScore( 100 );
         this.layer.removeChild( this );
     }
 })
