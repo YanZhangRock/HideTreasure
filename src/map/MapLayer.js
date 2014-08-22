@@ -42,6 +42,8 @@ var MapLayer = cc.Layer.extend({
             var d = this.data.gridsData[i];
             this.grids[d.x][d.y].tile = d.tile || "GRASS";
         }
+        this.grids.width = this.data.width;
+        this.grids.height = this.data.height;
     },
 
     getTileImg: function( tile ) {
@@ -87,6 +89,8 @@ var MapLayer = cc.Layer.extend({
             var grid = this.grids[cfg.x][cfg.y];
             guard.setCurGrid( grid );
             this.guards.push( guard );
+            guard.thief = this.thief;
+            this.thief.guards.push( guard );
             guard.startPatrol();
             this.addChild( guard, MapLayer.Z.GUARD );
         }
@@ -123,11 +127,79 @@ var MapLayer = cc.Layer.extend({
         }
     },
 
+    isGridVisible: function( g1, g2 ) {
+        if( g1.x == g2.x) {
+            for( var y = Math.min( g1.y, g2.y ); y <= Math.max( g1.y, g2.y ); y++ ) {
+                if( !this.canPass( this.grids[g1.x][y] ) ) {
+                    return false;
+                }
+            }
+            return true;
+        } else if( g1.y == g2.y ) {
+            for( var x = Math.min( g1.x, g2.x ); x <= Math.max( g1.x, g2.x ); x++ ) {
+                if( !this.canPass( this.grids[x][g1.y] ) ) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    },
+
+    getRelativeDir: function( oriGrid, tarGrid ) {
+        var dir = null;
+        var dx = Math.abs( oriGrid.x - tarGrid.x );
+        var dy = Math.abs( oriGrid.y - tarGrid.y );
+        if( dx > dy ) {
+            if( oriGrid.x > tarGrid.x ) {
+                dir = Def.LEFT;
+            } else {
+                dir = Def.RIGHT;
+            }
+        } else {
+            if( oriGrid.y > tarGrid.y ) {
+                dir = Def.DOWN;
+            } else {
+                dir = Def.UP;
+            }
+        }
+        return dir;
+    },
+
+    getRelativeDirs: function( oriGrid, tarGrid ) {
+        var dirs = [];
+        var dx = Math.abs( oriGrid.x - tarGrid.x );
+        var dy = Math.abs( oriGrid.y - tarGrid.y );
+        if( dx > dy ) {
+            if( oriGrid.x > tarGrid.x ) {
+                dirs.push( Def.LEFT );
+            } else {
+                dirs.push( Def.RIGHT );
+            }
+            if( oriGrid.y > tarGrid.y ) {
+                dirs.push( Def.DOWN );
+            } else {
+                dirs.push( Def.UP );
+            }
+        } else {
+            if( oriGrid.y > tarGrid.y ) {
+                dirs.push( Def.DOWN );
+            } else {
+                dirs.push( Def.UP );
+            }
+            if( oriGrid.x > tarGrid.x ) {
+                dirs.push( Def.LEFT );
+            } else {
+                dirs.push( Def.RIGHT );
+            }
+        }
+        return dirs;
+    },
+
     onKeyPressed: function( key, event ) {
         if( key == cc.KEY.w || key == cc.KEY.up ) {
             this.thief.changeDir( Def.UP );
-            this.guards[0].changeDir( Def.UP );
-            this.guards[1].changeDir( Def.UP );
         } else if( key == cc.KEY.a || key == cc.KEY.left ) {
             this.thief.changeDir( Def.LEFT );
         } else if( key == cc.KEY.d || key == cc.KEY.right ) {

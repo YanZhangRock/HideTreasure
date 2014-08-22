@@ -16,6 +16,7 @@ var Mover = cc.Sprite.extend({
     speed: 0,
     arriveCallBack: null,
     updateCallBack: null,
+    lastCallBackTime: 0,
 
     ctor: function( img, layer ) {
         this._super( img );
@@ -55,7 +56,9 @@ var Mover = cc.Sprite.extend({
         if( this.state != Mover.STATE.MOVE ) return;
         var p = this.getPosition();
         var dist = Util.getManDist( p, Util.grid2World(this.nextGrid) );
-        if( dist < Mover.ARRIVE_DIST ) {
+        this.lastCallBackTime += dt;
+        if( dist < Mover.ARRIVE_DIST && this.lastCallBackTime > 0.2 ) {
+            this.lastCallBackTime = 0;
             var maybeStop = false;
             if( this.nextDir == this.curDir ) {
                 maybeStop = true;
@@ -100,6 +103,15 @@ var Mover = cc.Sprite.extend({
         this.setPosition( Util.grid2World( grid ) );
     },
 
+    getRealGrid: function() {
+        var p = Util.world2Grid( this.getPosition() );
+        p.x = p.x > this.grids.width-1 ? p.x - this.grids.width : p.x;
+        p.x = p.x < 0 ? 0 : p.x;
+        p.y = p.y > this.grids.height-1 ? p.y - this.grids.height : p.y;
+        p.y = p.y < 0 ? 0 : p.y;
+        return this.grids[p.x][p.y];
+    },
+
     updateNextGrid: function() {
         var offset = this.getNextGridOffset( this.curDir );
         var nextGrid = this.layer.getOffsetGrid( this.curGrid, offset );
@@ -107,7 +119,7 @@ var Mover = cc.Sprite.extend({
     },
 
     changeDir: function( dir ) {
-        if( this.canChangeDirNow( dir )  ) {
+        if( this.canChangeDirNow( dir ) ) {
             this.curDir = dir;
             this.storeNextDir( dir );
             this.nextGrid = this.curGrid;
@@ -120,6 +132,18 @@ var Mover = cc.Sprite.extend({
                 this.startMove();
             }
         }
+    },
+
+    changeDirInstant: function( dir ) {
+        if( !this.canChangeDir( this.getRealGrid(), dir ) ) {
+            return false;
+        }
+        this.curDir = dir;
+        this.storeNextDir( dir );
+        this.nextGrid = this.curGrid;
+        this.updateSpeed();
+        this.startMove();
+        return true;
     },
 
     storeNextDir: function( dir ) {

@@ -11,8 +11,8 @@ Util.grid2World = function( grid ) {
 };
 
 Util.world2Grid = function( world ) {
-    var x = ( world.x - Def.ORI_GRID.x ) / Def.GRID_SIZE - 1;
-    var y = ( world.y - Def.ORI_GRID.y ) / Def.GRID_SIZE - 1;
+    var x = Math.round( (world.x - Def.ORI_GRID.x) / Def.GRID_SIZE ) - 1;
+    var y = Math.round( (world.y - Def.ORI_GRID.y) / Def.GRID_SIZE ) - 1;
     return { x: x, y: y };
 };
 
