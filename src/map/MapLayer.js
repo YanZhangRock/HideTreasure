@@ -215,8 +215,7 @@ var MapLayer = cc.Layer.extend({
             for( var j=0; j<this.data.height; j++) {
                 var grid = this.grids[i][j];
                 var pos = Util.grid2World( grid );
-                if( grid.tile == "GRASS" && !grid.money &&
-                    !grid.guard && !grid.thief ) {
+                if( grid.tile == "GRASS" && !grid.money && !grid.thief ) {
                     var gold = new Gold( this );
                     gold.initWithTexture( batch.getTexture() );
                     gold.setPosition(pos);
