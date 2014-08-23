@@ -9,24 +9,36 @@ var MapLayer = cc.Layer.extend({
     guards: [],
     moneys: [],
     traps: [],
+    golds: [],
     state: null,
     restartMenu: null,
     resultLabel: null,
     scoreLabel: null,
-    mapName: "res/mapCfg/map2.json",
+    percentLabel: null,
+    timerLabel: null,
     touchBaganLoc: null,
     mapBatch: null,
-    goldBatch: null,
+    objBatch: null,
+    maxMoney: 0,
+    owner: "",
+    restTime: 0,
 
     ctor: function() {
         this._super();
         cc.spriteFrameCache.addSpriteFrames(res.Tile_plist);
+        cc.spriteFrameCache.addSpriteFrames(res.Objs_plist);
         this.registerInputs();
         this.state = MapLayer.STATE.GAME;
         // score label
-        var label = new cc.LabelTTF("得分: ", "Arial", 40);
+        var label = new cc.LabelTTF("得分：", "Arial", 40);
         this.scoreLabel = label;
         label.x = g_size.width * 0.2;
+        label.y = g_size.height * 0.94;
+        this.addChild( label, MapLayer.Z.UI );
+        // timer label
+        var label = new cc.LabelTTF("剩余时间：", "Arial", 40);
+        this.timerLabel = label;
+        label.x = g_size.width * 0.5;
         label.y = g_size.height * 0.94;
         this.addChild( label, MapLayer.Z.UI );
         // restart label
@@ -37,8 +49,12 @@ var MapLayer = cc.Layer.extend({
         this.restartMenu = menu;
         this.addChild( menu, MapLayer.Z.UI );
         // result label
-        var label = new cc.LabelTTF("你赢了！", "Arial", 80);
+        var label = new cc.LabelTTF("你赢了！", "Arial", 60);
         this.resultLabel = label;
+        this.addChild( label, MapLayer.Z.UI );
+        // percent label
+        var label = new cc.LabelTTF("", "Arial", 60);
+        this.percentLabel = label;
         this.addChild( label, MapLayer.Z.UI );
         this.showResult( false );
     },
@@ -91,59 +107,90 @@ var MapLayer = cc.Layer.extend({
         if( isShow ) {
             this.restartMenu.x = g_size.width * 0.52;
             this.restartMenu.y = g_size.height * 0.4;
-            this.resultLabel.x = g_size.width * 0.57;
-            this.resultLabel.y = g_size.height * 0.6;
+            this.resultLabel.x = g_size.width * 0.54;
+            this.resultLabel.y = g_size.height * 0.7;
+            this.percentLabel.x = g_size.width * 0.50;
+            this.percentLabel.y = g_size.height * 0.56;
         } else {
             this.restartMenu.x = g_size.width * 100;
             this.restartMenu.y = g_size.height * 100;
             this.resultLabel.x = g_size.width * 100;
             this.resultLabel.y = g_size.height * 100;
+            this.percentLabel.x = g_size.width * 100;
+            this.percentLabel.y = g_size.height * 100;
         }
     },
 
     clearObjs: function() {
-        for( var i in this.guards ) {
-            this.removeChild( this.guards[i] );
-        }
-        for( var i in this.moneys ) {
-            this.removeChild( this.moneys[i] );
-        }
-        for( var i in this.traps ) {
-            this.removeChild( this.traps[i] );
-        }
-        this.removeChild( this.thief );
+        var batch = this.objBatch;
+        batch.removeAllChildren();
         this.guards = [];
         this.moneys = [];
         this.traps = [];
         this.thief = null;
     },
 
+    startGame: function() {
+        this.initMap();
+        this.drawMap();
+        this.createGolds();
+        this.createObjs();
+        this.setRestTime( MapLayer.TIMEUP );
+        this.schedule( this.checkTimeup, MapLayer.TIMEUP_INTERVAL );
+        this.state = MapLayer.STATE.GAME;
+    },
+
     restartGame: function() {
         this.clearObjs();
         this.initMap();
-        this.createObjs();
         this.createGolds();
+        this.createObjs();
         this.showResult( false );
+        this.percentLabel.setString("");
+        this.setRestTime( MapLayer.TIMEUP );
+        this.schedule( this.checkTimeup, MapLayer.TIMEUP_INTERVAL );
         this.state = MapLayer.STATE.GAME;
     },
 
     endGame: function( isWin ) {
         this.state = MapLayer.STATE.END;
         this.thief.unscheduleUpdate();
+        this.unschedule( this.checkTimeup );
         for( var i in this.guards ) {
             this.guards[i].unscheduleUpdate();
         }
         if( isWin ) {
-            this.resultLabel.setString( "你赢了！" );
+            this.resultLabel.setString( "你成功偷走了"+this.owner+"的钱钱！" );
         } else {
-            this.resultLabel.setString( "你输了！" );
+            this.resultLabel.setString( "你被"+this.owner+"无情的踩死了T_T" );
         }
+        var self = this;
+        Util.getPercent( this.thief.score, function(percent){self.onGetPercent(percent)} );
         this.showResult( true );
+    },
+
+    onGetPercent: function( percent ) {
+        if( this.state != MapLayer.STATE.END ) return;
+        var str = "得分："+this.thief.score+"\n" + "击败了全球%"+percent+"的玩家!";
+        this.percentLabel.setString(str);
+    },
+
+    setRestTime: function( time ) {
+        this.restTime = time;
+        this.timerLabel.setString( "剩余时间："+this.restTime );
+    },
+
+    checkTimeup: function() {
+        this.restTime -= MapLayer.TIMEUP_INTERVAL;
+        this.setRestTime( this.restTime );
+        if( this.restTime <= 0 ) {
+            this.endGame( false );
+        }
     },
 
     loadMap: function( callBack ) {
         var self = this;
-        Util.loadJsonFile( this.mapName,
+        Util.loadJsonFile( MapLayer.MAP,
             function( jsonData ){
                 if( !callBack ) return;
                 self.data = jsonData;
@@ -153,6 +200,7 @@ var MapLayer = cc.Layer.extend({
     },
 
     initMap: function(){
+        this.owner = this.data.owner;
         this.grids = {}
         for( var i=0; i<this.data.width; i++) {
             for( var j=0; j<this.data.height; j++ ) {
@@ -180,7 +228,7 @@ var MapLayer = cc.Layer.extend({
 
     drawMap: function() {
         var mapImg = cc.textureCache.addImage(res.Tile_png);
-        var batchNode = new cc.SpriteBatchNode(mapImg);
+        var batchNode = new cc.SpriteBatchNode(mapImg, 200);
         this.mapBatch = batchNode;
         this.addChild( batchNode, MapLayer.Z.TILE );
 
@@ -203,24 +251,21 @@ var MapLayer = cc.Layer.extend({
     },
 
     createGolds: function() {
-        if( this.goldBatch ) {
-            this.goldBatch.removeAllChildren();
-            this.removeChild( this.goldBatch );
-            this.goldBatch = null;
+        for( var i in this.golds ) {
+            this.mapBatch.removeChild( this.golds[i] );
         }
-        var batch = new cc.SpriteBatchNode( res.Gold_png, 100 );
-        this.goldBatch = batch;
-        this.addChild( batch, MapLayer.Z.ITEM );
+        this.golds = [];
+        var batch = this.mapBatch;
         for( var i=0; i<this.data.width; i++ ) {
             for( var j=0; j<this.data.height; j++) {
                 var grid = this.grids[i][j];
                 var pos = Util.grid2World( grid );
                 if( grid.tile == "GRASS" && !grid.money && !grid.thief ) {
                     var gold = new Gold( this );
-                    gold.initWithTexture( batch.getTexture() );
                     gold.setPosition(pos);
                     gold.grid = grid;
                     grid.gold = gold;
+                    this.golds.push( gold );
                     batch.addChild( gold );
                 }
             }
@@ -228,16 +273,20 @@ var MapLayer = cc.Layer.extend({
     },
 
     createObjs: function() {
+        var objImg = cc.textureCache.addImage( res.Objs_png );
+        var batch = new cc.SpriteBatchNode( objImg );
+        this.objBatch = batch;
+        this.addChild( batch, MapLayer.Z.OBJ );
         // thief
-        this.thief = new Thief( res.Thief_png, this );
+        this.thief = new Thief( this );
         var grid = this.grids[this.data.thiefPos.x][this.data.thiefPos.y];
         this.thief.setCurGrid( grid );
         grid.thief = this.thief;
-        this.addChild( this.thief, MapLayer.Z.THIEF );
+        batch.addChild( this.thief );
         // guards
         for( var i in this.data.guardPos ) {
             var cfg = this.data.guardPos[i];
-            var guard = new Guard( res.Guard_png, this );
+            var guard = new Guard( this );
             var grid = this.grids[cfg.x][cfg.y];
             guard.setCurGrid( grid );
             this.guards.push( guard );
@@ -245,9 +294,10 @@ var MapLayer = cc.Layer.extend({
             grid.guard = guard;
             //this.thief.guards.push( guard );
             guard.startPatrol();
-            this.addChild( guard, MapLayer.Z.GUARD );
+            batch.addChild( guard );
         }
         // moneys
+        this.maxMoney = 0;
         for( var i in this.data.moneyPos ) {
             var cfg = this.data.moneyPos[i];
             var grid = this.grids[cfg.x][cfg.y];
@@ -255,7 +305,8 @@ var MapLayer = cc.Layer.extend({
             grid.money = money;
             money.setGrid( grid );
             this.moneys.push( money );
-            this.addChild( money, MapLayer.Z.ITEM );
+            batch.addChild( money );
+            this.maxMoney++;
         }
         // traps
         for( var i in this.data.trapPos ) {
@@ -265,32 +316,26 @@ var MapLayer = cc.Layer.extend({
             grid.trap = trap;
             trap.setGrid( grid );
             this.traps.push( trap );
-            this.addChild( trap, MapLayer.Z.ITEM );
+            batch.addChild( trap );
         }
         this.thief.moneys = this.moneys;
         this.thief.guards = this.guards;
         this.thief.traps = this.traps;
-        //this.thief.runAction( cc.moveBy( 5, cc.p(500,0)) );
     },
 
     getOffsetGrid: function( grid, offset ) {
-        //var isCrossBorder = false;
         var x = grid.x;
         var y = grid.y;
         x = x + offset.x;
         y = y + offset.y;
         if( x > this.data.width-1 ) {
-            //isCrossBorder = true;
             x = x - this.data.width;
         } else if( x < 0 ) {
-            //isCrossBorder = true
             x = x + this.data.width;
         }
         if( y > this.data.height-1 ) {
-            //isCrossBorder = true
             y = y - this.data.height;
         } else if ( y < 0 ) {
-            //isCrossBorder = true
             y = y + this.data.height;
         }
         return this.grids[x][y]
@@ -396,9 +441,8 @@ var MapLayer = cc.Layer.extend({
 MapLayer.Z = {
     TILE: 0,
     ITEM: 1,
-    THIEF: 2,
-    GUARD: 3,
-    UI: 4
+    OBJ: 2,
+    UI: 3
 };
 
 MapLayer.TILE_TYPE = {
@@ -414,4 +458,7 @@ MapLayer.STATE = {
     GAME: 0, END: 1
 };
 
+MapLayer.TIMEUP = 60;
+MapLayer.TIMEUP_INTERVAL = 1;
 MapLayer.SWIPE_DIST = 20;
+MapLayer.MAP = "res/mapCfg/map.json";

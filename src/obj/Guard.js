@@ -6,8 +6,8 @@ var Guard = Mover.extend({
     aiState: null,
     thief: null,
 
-    ctor: function( img, layer ) {
-        this._super( img, layer );
+    ctor: function( layer ) {
+        this._super( "#guard.png", layer );
         this.speed = Guard.PATROL_SPEED;
         this.aiState = Guard.AI_STATE.PATROL;
         this.arriveCallBack = this.onArriveGrid;
@@ -64,6 +64,9 @@ var Guard = Mover.extend({
             this.changeDir( this.layer.getRelativeDir( guardGrid, thiefGrid ) );
             this.startChase();
         }
+        if( this.state == Mover.STATE.IDLE ) {
+            this.startReturn();
+        }
     },
 
     onArriveGridPatrol: function() {
@@ -84,7 +87,11 @@ var Guard = Mover.extend({
         this.startMove();
     },
 
-    processChase: function() {},
+    processChase: function() {
+        if( this.state == Mover.STATE.IDLE ) {
+            this.startReturn();
+        }
+    },
 
     onArriveGridChase: function() {
         // keep fast chasing
@@ -132,6 +139,9 @@ var Guard = Mover.extend({
             this.changeDir( this.layer.getRelativeDir( guardGrid, thiefGrid ) );
             this.startChase();
         }
+        if( this.state == Mover.STATE.IDLE ) {
+            this.startReturn();
+        }
     },
 
     onArriveGridReturn: function() {
@@ -171,9 +181,9 @@ var Guard = Mover.extend({
 
 });
 
-Guard.PATROL_SPEED = 40;
-Guard.CHASE_SLOW = 60;
-Guard.CHASE_FAST = 90;
+Guard.PATROL_SPEED = 50;
+Guard.CHASE_SLOW = 80;
+Guard.CHASE_FAST = 115;
 Guard.PATROL_DIST = 3;
 Guard.CHASE_DIST = 5;
 Guard.AI_STATE = {

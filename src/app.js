@@ -72,10 +72,7 @@ var MainScene = cc.Scene.extend({
     mapLayer: null,
 
     onLoadMapFinish: function() {
-        this.mapLayer.initMap();
-        this.mapLayer.drawMap();
-        this.mapLayer.createObjs();
-        this.mapLayer.createGolds();
+        this.mapLayer.startGame();
     },
 
     onEnter:function () {

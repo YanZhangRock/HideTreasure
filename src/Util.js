@@ -44,3 +44,17 @@ Util.arrayRemove = function( array, obj ) {
     if( idx < 0 ) return;
     array.splice( idx, 1 );
 };
+
+Util.getPercent = function( score, callBack ) {
+    var xhr = cc.loader.getXMLHttpRequest();
+    xhr.open( "GET", "http://minihugscorecenter.appspot.com/scorecenter?Score="+score
+        +"&Game=HideTreasureTest" );
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var percent = parseFloat( xhr.responseText );
+            var percent = Math.round( percent*10000 ) / 100;
+            callBack( percent );
+        }
+    };
+    xhr.send();
+};

@@ -5,6 +5,7 @@
 var Item = cc.Sprite.extend({
     layer: null,
     grid: null,
+    subImg: null,
 
     ctor: function( img, layer ) {
         this._super( img );
@@ -21,6 +22,9 @@ var Item = cc.Sprite.extend({
     setGrid: function( grid ) {
         this.grid = grid;
         this.setPosition( Util.grid2World( grid ) );
+        if( this.subImg ) {
+            this.subImg.setPosition( Util.grid2World( grid ) );
+        }
     },
 
     collideRect: function( x, y ) {

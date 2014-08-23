@@ -7,7 +7,7 @@ var Gold = cc.Sprite.extend({
     grid: null,
 
     ctor: function ( layer ) {
-        this._super();
+        this._super( "#gold.png" );
         this.layer = layer;
         this.attr({
             anchorX: 0.5,
@@ -18,9 +18,14 @@ var Gold = cc.Sprite.extend({
         });
     },
 
+    collideRect: function( x, y ) {
+        return cc.rect(x - 10, y - 10, 20, 20);
+    },
+
     onPicked: function( thief ) {
         thief.addScore( 10 );
-        this.grid.gold = null,
-        this.layer.goldBatch.removeChild( this );
+        this.grid.gold = null;
+        Util.arrayRemove( this.layer.golds, this );
+        this.layer.mapBatch.removeChild( this );
     }
 });

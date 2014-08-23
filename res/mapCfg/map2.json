@@ -1,4 +1,5 @@
 {
+    "owner": "岩哥",
 	"width": 11,
 	"height": 13,
 	"thiefPos": {"x": 5, "y": 7},
@@ -37,7 +38,7 @@
 		{ "x": 5, "y": 1, "tile": "GRASS"},
 		{ "x": 6, "y": 1, "tile": "GRASS"},
 		{ "x": 7, "y": 1, "tile": "GRASS"},
-		{ "x": 8, "y": 1, "tile": "TREES"},
+		{ "x": 8, "y": 1, "tile": "GRASS"},
 		{ "x": 9, "y": 1, "tile": "GRASS"},
 		{ "x": 10, "y": 1, "tile": "TREES"},
 		{ "x": 0, "y": 2, "tile": "TREES"},
