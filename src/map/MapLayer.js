@@ -460,5 +460,5 @@ MapLayer.STATE = {
 
 MapLayer.TIMEUP = 60;
 MapLayer.TIMEUP_INTERVAL = 1;
-MapLayer.SWIPE_DIST = 20;
+MapLayer.SWIPE_DIST = 10;
 MapLayer.MAP = "res/mapCfg/map.json";
