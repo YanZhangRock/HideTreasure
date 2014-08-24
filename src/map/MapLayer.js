@@ -131,6 +131,7 @@ var MapLayer = cc.Layer.extend({
     },
 
     startGame: function() {
+        this.loadMap();
         this.initMap();
         this.drawMap();
         this.createGolds();
@@ -188,19 +189,12 @@ var MapLayer = cc.Layer.extend({
         }
     },
 
-    loadMap: function( callBack ) {
-        var self = this;
-        Util.loadJsonFile( MapLayer.MAP,
-            function( jsonData ){
-                if( !callBack ) return;
-                self.data = jsonData;
-                callBack();
-            }
-        );
+    loadMap: function() {
+        this.data = Util.loadJsonFile( MapLayer.MAP );
     },
 
     initMap: function(){
-        this.owner = this.data.owner;
+        this.owner = this.data["owner"];
         this.grids = {}
         for( var i=0; i<this.data.width; i++) {
             for( var j=0; j<this.data.height; j++ ) {
@@ -208,9 +202,9 @@ var MapLayer = cc.Layer.extend({
                 this.grids[i][j] = { x:i, y:j };
             }
         }
-        for( var i in this.data.gridsData ){
-            var d = this.data.gridsData[i];
-            this.grids[d.x][d.y].tile = d.tile || "GRASS";
+        for( var i in this.data["gridsData"] ){
+            var d = this.data["gridsData"][i];
+            this.grids[d.x][d.y].tile = d["tile"] || "GRASS";
         }
         this.grids.width = this.data.width;
         this.grids.height = this.data.height;
@@ -279,13 +273,13 @@ var MapLayer = cc.Layer.extend({
         this.addChild( batch, MapLayer.Z.OBJ );
         // thief
         this.thief = new Thief( this );
-        var grid = this.grids[this.data.thiefPos.x][this.data.thiefPos.y];
+        var grid = this.grids[this.data["thiefPos"].x][this.data["thiefPos"].y];
         this.thief.setCurGrid( grid );
         grid.thief = this.thief;
         batch.addChild( this.thief );
         // guards
-        for( var i in this.data.guardPos ) {
-            var cfg = this.data.guardPos[i];
+        for( var i in this.data["guardPos"] ) {
+            var cfg = this.data["guardPos"][i];
             var guard = new Guard( this );
             var grid = this.grids[cfg.x][cfg.y];
             guard.setCurGrid( grid );
@@ -298,8 +292,8 @@ var MapLayer = cc.Layer.extend({
         }
         // moneys
         this.maxMoney = 0;
-        for( var i in this.data.moneyPos ) {
-            var cfg = this.data.moneyPos[i];
+        for( var i in this.data["moneyPos"] ) {
+            var cfg = this.data["moneyPos"][i];
             var grid = this.grids[cfg.x][cfg.y];
             var money = new Money( this );
             grid.money = money;
@@ -309,8 +303,8 @@ var MapLayer = cc.Layer.extend({
             this.maxMoney++;
         }
         // traps
-        for( var i in this.data.trapPos ) {
-            var cfg = this.data.trapPos[i];
+        for( var i in this.data["trapPos"] ) {
+            var cfg = this.data["trapPos"][i];
             var grid = this.grids[cfg.x][cfg.y];
             var trap = new Trap( this );
             grid.trap = trap;
@@ -450,8 +444,8 @@ MapLayer.TILE_TYPE = {
 };
 
 MapLayer.TILE2TYPE = {
-    TREES: MapLayer.TILE_TYPE.BLOCK,
-    GRASS: MapLayer.TILE_TYPE.ROAD
+    "TREES": MapLayer.TILE_TYPE.BLOCK,
+    "GRASS": MapLayer.TILE_TYPE.ROAD
 };
 
 MapLayer.STATE = {

@@ -16,17 +16,9 @@ Util.world2Grid = function( world ) {
     return { x: x, y: y };
 };
 
-Util.loadJsonFile = function( fileName, callBack ) {
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', fileName, true);
-    xobj.onreadystatechange = function () {
-        if (xobj.readyState == 4 && xobj.status == "200") {
-            var data = JSON.parse( xobj.responseText );
-            callBack( data );
-        }
-    }
-    xobj.send(null);
+Util.loadJsonFile = function( file ) {
+    var txt = cc.loader._loadTxtSync( file );
+    return JSON.parse( txt );
 };
 
 Util.getManDist = function ( from, to ) {

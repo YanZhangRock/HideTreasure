@@ -71,16 +71,17 @@ var HelloWorldLayer = cc.Layer.extend({
 var MainScene = cc.Scene.extend({
     mapLayer: null,
 
-    onLoadMapFinish: function() {
-        this.mapLayer.startGame();
-    },
+//    onLoadMapFinish: function() {
+//        this.mapLayer.startGame();
+//    },
 
     onEnter:function () {
         this._super();
         this.mapLayer = new MapLayer();
         this.addChild( this.mapLayer );
-        var self = this;
-        this.mapLayer.loadMap( function() { self.onLoadMapFinish(); } );
+//        var self = this;
+//        this.mapLayer.loadMap( function() { self.onLoadMapFinish(); } );
+        this.mapLayer.startGame();
     }
 
 });
