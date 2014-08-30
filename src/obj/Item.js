@@ -4,6 +4,7 @@
 
 var Item = cc.Sprite.extend({
     layer: null,
+    map: null,
     grid: null,
     subImg: null,
 
@@ -17,6 +18,7 @@ var Item = cc.Sprite.extend({
             scale: 1.0
         });
         this.layer = layer;
+        this.map = layer.map;
     },
 
     setGrid: function( grid ) {

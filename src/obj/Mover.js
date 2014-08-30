@@ -3,7 +3,7 @@
  */
 
 var Mover = cc.Sprite.extend({
-    grids: null,
+    map: null,
     layer: null,
     nextDir: Def.LEFT,
     curDir: Def.LEFT,
@@ -28,7 +28,7 @@ var Mover = cc.Sprite.extend({
             y: 0,
             scale: 1.25
         });
-        this.grids = layer.grids;
+        this.map = layer.map;
         this.layer = layer;
         this.state = Mover.STATE.IDLE;
         this.scheduleUpdate();
@@ -121,11 +121,11 @@ var Mover = cc.Sprite.extend({
 
     getRealGrid: function() {
         var p = Util.world2Grid( this.getPosition() );
-        p.x = p.x > this.grids.width-1 ? p.x - this.grids.width : p.x;
+        p.x = p.x > this.map.width-1 ? p.x - this.map.width : p.x;
         p.x = p.x < 0 ? 0 : p.x;
-        p.y = p.y > this.grids.height-1 ? p.y - this.grids.height : p.y;
+        p.y = p.y > this.map.height-1 ? p.y - this.map.height : p.y;
         p.y = p.y < 0 ? 0 : p.y;
-        return this.grids[p.x][p.y];
+        return this.map.grids[p.x][p.y];
     },
 
     updateNextGrid: function() {

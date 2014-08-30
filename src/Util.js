@@ -50,3 +50,17 @@ Util.getPercent = function( score, callBack ) {
     };
     xhr.send();
 };
+
+
+Util.getHTML = function( url, callBack ) {
+    var xhr = cc.loader.getXMLHttpRequest();
+    xhr.open( "GET", url );
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            if( callBack ) {
+                callBack( xhr.responseText );
+            }
+        }
+    };
+    xhr.send();
+};
