@@ -1,4 +1,4 @@
-var g_size = {};
+
 
 cc.game.onStart = function(){
     cc.view.adjustViewPort(true);

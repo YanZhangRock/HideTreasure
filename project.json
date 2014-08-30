@@ -1,0 +1,27 @@
+{
+    "project_type": "javascript",
+
+    "debugMode" : 1,
+    "showFPS" : true,
+    "frameRate" : 60,
+    "id" : "gameCanvas",
+    "renderMode" : 0,
+    "engineDir":"frameworks/cocos2d-html5",
+
+    "modules" : ["cocos2d"],
+
+    "jsList" : [
+        "src/resource.js",
+        "src/app.js",
+        "src/Def.js",
+        "src/Util.js",
+        "src/MainLayer.js",
+        "src/obj/Mover.js",
+        "src/obj/Thief.js",
+        "src/obj/Guard.js",
+        "src/obj/Item.js",
+        "src/obj/Money.js",
+        "src/obj/Trap.js",
+        "src/obj/Gold.js"
+    ]
+}
